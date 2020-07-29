@@ -1,3 +1,4 @@
 {
-	"entry": "./src/app.js"
+	"entry": "./src/app.js",
+	"services": {}
 }

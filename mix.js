@@ -58,8 +58,7 @@ function hotCompile() {
 
 function electron() {
   spawn(electronPath, [
-    resolve(__dirname, 'electron'),
-    resolve(config.rootDir, 'dist/index.html')
+    resolve(__dirname, 'electron')
   ], {
     stdio: 'inherit'
   }).on('exit', _ => killAll(0));
@@ -78,6 +77,8 @@ function superviseServices() {
       '-w',
       entry,
       '-q',
+      '-n',
+      'exit',
       entry
     ])
   }

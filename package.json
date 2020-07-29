@@ -1,12 +1,12 @@
 {
-  "name": "valapp",
+  "name": "mix.js",
   "version": "0.0.1",
   "scripts": {
     "dev": "electron electron",
     "webpack": "webpack"
   },
   "bin": {
-    "val": "./val.js"
+    "mix": "./mix.js"
   },
   "main": "src/app.js",
   "license": "MIT",
