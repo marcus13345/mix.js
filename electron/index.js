@@ -23,6 +23,9 @@ app.once('ready', _ => {
 	protocol.interceptFileProtocol('file', (request, callback) => {
 		let url = request.url.substr('file'.length + 4);
 		
+		//just ignore query params...
+		url = url.split('?')[0];
+
 		url = resolve(CONTENT_ROOT, url);
 
 		// console.log(url);
