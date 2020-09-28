@@ -2,7 +2,6 @@ const { resolve } = require('path');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CspHtmlWebpackPlugin = require('csp-html-webpack-plugin');
-const LiveReloadPlugin = require('webpack-livereload-plugin');
 
 const { 
 	livereload = {
@@ -10,44 +9,21 @@ const {
 	},
 	rootDir,
 	entry
-} = require('./src/config');
+} = require('../src/config');
 
 // console.log(require.resolve('babel-loader'));
 // 
 
-class HtmlInjectLiveReload {
-	apply (compiler) {
-		compiler.hooks.compilation.tap('HtmlInjectLiveReload', (compilation) => {
-			// console.log('The compiler is starting a new compilation...')
-			// Static Plugin interface |compilation |HOOK NAME | register listener 
-			HtmlWebpackPlugin.getHooks(compilation).beforeEmit.tapAsync(
-				'HtmlInjectLiveReload', // <-- Set a meaningful name here for stacktraces
-				(data, cb) => {
-					// Manipulate the content
-					// console.dir();
-					const pre = data.html.split(/(<\/body><\/html>)/g)[0];
-					const post = data.html.split(/(<\/body><\/html>)/g)[1];
-					data.html = ''
-						+ pre
-						+ '<script async src="http://localhost:35729/livereload.js"></script>'
-						+ post
-					// Tell webpack to move on
-					cb(null, data)
-				}
-			)
-		})
-	}
-}
-
 module.exports = {
 	mode: 'production',
-	devtool: 'source-map',
+	devtool: 'inline-source-map', // inline because electron has trouble loading external over file://
 	entry: resolve(rootDir, entry),
 	performance: { hints: false },
 	output: {
 		filename: 'index.bundle.js',
 		path: resolve(rootDir, 'dist'),
-		publicPath: '/' // this is to set scripts to load from root for SPA 404 fallbacks
+		publicPath: '/', // this is to set scripts to load from root for SPA 404 fallbacks
+		// sourceMapFilename: "/index.bundle.js.map"
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
@@ -65,20 +41,34 @@ module.exports = {
 					'font-src': 'data:'
 				}
 			}
-		}),
+		})
 		// new CspHtmlWebpackPlugin({}, {}),
-		new LiveReloadPlugin({}),
-		new HtmlInjectLiveReload({ options: '' })
 	],
 	module: {
 		rules: [
 			{
-				test: /\.html$/i,
+				// backup loader ... honestly this is an incantation,
+				// anything that doesnt have 'js' in its extension
+				// because for some reason js files are getting through
+				// without being babelled
+				// test: /\.[^.]*(?:(?!js))[^.]*$/i,
+				// NVM NOW WE JUST IGNORE NODE_MODULES LOL I GUESS HAHAHAHAHAH
+
+				test: /\.[^.]*$/i,
+				exclude: /(node_modules|bower_components)/,
+				use: [
+					{
+						loader: require.resolve('./custom-file-loader'),
+					},
+				],
+			},
+			{
+				test: /\.(html)$/i,
 				loader: require.resolve('html-loader'),
 			},
 			{
 				test: /\.css$/i,
-				use: require.resolve('css-loader'),
+				loader: require.resolve('css-loader'),
 			},
 			{
 				test: /\.(png|jpe?g|gif)$/i,
@@ -114,7 +104,7 @@ module.exports = {
 						}
 					}
 				]
-			}
+			},
 		],
 	}
 }
