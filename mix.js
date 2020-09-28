@@ -218,7 +218,8 @@ customElements.define('${kebabCase}', ${upperCamelCase});
 		}
 	}
 }
-const termWidth = process.stdout.getWindowSize()[0] || 80;
+
+const termWidth = 'getWindowSize' in process.stdout ? process.stdout.getWindowSize()[0] : 80;
 
 require('yargs') // eslint-disable-line
 	.locale('en')
