@@ -218,6 +218,7 @@ customElements.define('${kebabCase}', ${upperCamelCase});
 		}
 	}
 }
+const termWidth = process.stdout.getWindowSize()[0] || 80;
 
 require('yargs') // eslint-disable-line
 	.locale('en')
@@ -253,6 +254,6 @@ require('yargs') // eslint-disable-line
 	})
 	.demandCommand()
 	.help()
-	.wrap(Math.min(process.stdout.getWindowSize()[0], 80))
+	.wrap(Math.min(termWidth, 80))
 	.argv
 
